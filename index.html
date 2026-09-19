@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>像素大陆 · Pixel Wilds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div id="game">
+
+  <!-- ================= 主世界 ================= -->
+  <div id="world-viewport">
+    <canvas id="world"></canvas>
+
+    <!-- 交互提示 -->
+    <div id="interact-hint" class="hidden">[E] 开启宝箱</div>
+
+    <!-- 世界事件横幅 -->
+    <div id="event-banner" class="hidden">
+      <div class="event-title">⚠ 深海入侵 · 世界事件</div>
+      <div class="event-sub">击败潮汐守卫，守护海岸！</div>
+    </div>
+
+    <!-- 伤害数字层 -->
+    <div id="float-layer"></div>
+
+    <!-- 虚拟摇杆（触屏） -->
+    <div id="joy-base"><div id="joy-knob"></div></div>
+  </div>
+
+  <!-- ================= 顶部资源栏 ================= -->
+  <header id="top-bar">
+    <div class="res"><span class="ricon gold"></span><span id="res-gold">12,580</span></div>
+    <div class="res"><span class="ricon gem"></span><span id="res-gem">246</span></div>
+    <div class="res"><span class="ricon ticket"></span><span id="res-ticket">10</span><i class="res-label">副本券</i></div>
+    <div class="top-actions">
+      <button class="top-btn" data-open="dungeon">🏰 副本</button>
+      <button class="top-btn" data-open="trial">⚔ 荣誉试炼</button>
+      <button class="top-btn" data-open="tower">🗼 爬塔</button>
+      <button class="top-btn" data-open="team">👥 团队副本</button>
+    </div>
+    <div class="boss-track">
+      <span class="boss-track-label">世界Boss</span>
+      <span class="boss-seq"><i class="boss-dot cur">石</i><i>虫</i><i>牛</i><i>眼</i></span>
+    </div>
+  </header>
+
+  <!-- ================= 左上：角色状态 ================= -->
+  <section id="hero-panel" class="pixel-panel">
+    <div class="hero-head">
+      <canvas id="hero-avatar" width="40" height="40"></canvas>
+      <div class="hero-meta">
+        <div class="hero-name">修女 · 赛琳娜</div>
+        <div class="hero-lv">Lv.28 <span class="hero-tag">开荒首选</span></div>
+      </div>
+      <button id="hero-switch" title="切换英雄（全部免费）">⇄</button>
+    </div>
+    <div class="bar hp">
+      <span class="bar-label">HP</span>
+      <div class="bar-track"><div class="bar-fill" id="hp-fill"></div><span class="bar-text" id="hp-text">860/860</span></div>
+    </div>
+    <div class="bar sta">
+      <span class="bar-label">体能</span>
+      <div class="bar-track"><div class="bar-fill" id="sta-fill"></div><span class="bar-text" id="sta-text">100/100</span></div>
+    </div>
+    <div class="buffs">
+      <span class="buff shield" title="修女护盾">🛡 护盾 200</span>
+      <span class="buff" title="咕咕远程加成（当前未生效）">远程+15%</span>
+    </div>
+
+    <!-- 宠物栏 -->
+    <div id="pet-bar">
+      <div class="section-label">🐾 出战宠物</div>
+      <div class="pet-slot active" data-pet="0">
+        <canvas width="24" height="24" data-pet-sprite="pet_blue"></canvas>
+        <div class="pet-info">
+          <div class="pet-name">水灵灵 <i class="q q-blue"></i></div>
+          <div class="pet-hp"><div style="width:88%"></div></div>
+        </div>
+      </div>
+      <div class="pet-slot" data-pet="1">
+        <canvas width="24" height="24" data-pet-sprite="pet_purple"></canvas>
+        <div class="pet-info">
+          <div class="pet-name">幽影蝠 <i class="q q-purple"></i></div>
+          <div class="pet-hp rest"><div style="width:100%"></div></div>
+        </div>
+      </div>
+      <div class="pet-slot" data-pet="2">
+        <canvas width="24" height="24" data-pet-sprite="pet_orange"></canvas>
+        <div class="pet-info">
+          <div class="pet-name">炎龙崽 <i class="q q-orange"></i></div>
+          <div class="pet-hp rest"><div style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 小地图 ================= -->
+  <section id="minimap-panel" class="pixel-panel">
+    <canvas id="minimap" width="150" height="114"></canvas>
+    <div class="map-label">沙盒副本 · 风车草原</div>
+  </section>
+
+  <!-- ================= 底部：武器栏 ================= -->
+  <section id="weapon-bar" class="pixel-panel">
+    <div class="weapon-slot active" data-w="0">
+      <canvas class="weapon-icon" data-wicon="sword" width="36" height="36"></canvas>
+      <div class="w-meta">
+        <span class="w-name q-gold">烈焰巨剑 <i class="q q-gold"></i></span>
+        <span class="w-skills">主动：旋风斩 · 被动：灼烧</span>
+      </div>
+      <kbd>1</kbd>
+      <span class="w-cost">−12 体能</span>
+    </div>
+    <div class="weapon-slot" data-w="1">
+      <canvas class="weapon-icon" data-wicon="bow" width="36" height="36"></canvas>
+      <div class="w-meta">
+        <span class="w-name q-purple">游侠长弓 <i class="q q-purple"></i></span>
+        <span class="w-skills">主动：穿透箭 · 被动：暴击+20%</span>
+      </div>
+      <kbd>2</kbd>
+      <span class="w-cost">−8 体能</span>
+    </div>
+    <div class="weapon-slot" data-w="2">
+      <canvas class="weapon-icon" data-wicon="staff" width="36" height="36"></canvas>
+      <div class="w-meta">
+        <span class="w-name q-blue">学徒法杖 <i class="q q-blue"></i></span>
+        <span class="w-skills">主动：火球 · 被动：回能</span>
+      </div>
+      <kbd>3</kbd>
+      <span class="w-cost">−10 体能</span>
+    </div>
+  </section>
+
+  <button id="loadout-swap" title="一键换装（整套武器+装备）">
+    <span>👗</span> 一键换装
+  </button>
+
+  <!-- ================= 右下：技能/背包/仓库 ================= -->
+  <section id="action-dock">
+    <button class="dock-btn" data-open="storage"><span class="dock-ico">📦</span><span class="dock-label">仓库</span></button>
+    <button class="dock-btn" data-open="bag"><span class="dock-ico">🎒</span><span class="dock-label">背包</span><kbd>I</kbd></button>
+    <button class="dock-btn" id="skill-btn">
+      <canvas id="skill-icon" width="44" height="44"></canvas>
+      <span class="dock-label">圣光复苏</span>
+      <kbd>空格</kbd>
+      <span class="skill-cd" id="skill-cd"></span>
+      <span class="skill-cost">−30 体能</span>
+    </button>
+  </section>
+
+  <div id="hint-bar">WASD/方向键 移动 · 左键/空格 攻击 · 1/2/3 切换武器 · Q 英雄技能 · E 开箱 · I 背包</div>
+
+  <!-- ================= 通用弹窗 ================= -->
+  <div class="modal-mask hidden" id="modal">
+    <div class="modal pixel-panel">
+      <button class="modal-close" id="modal-close">✕</button>
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 英雄选择弹窗 -->
+  <div class="modal-mask hidden" id="hero-modal">
+    <div class="modal pixel-panel wide">
+      <button class="modal-close" data-close-hero>✕</button>
+      <h2>选择英雄 <span class="free-note">★ 全部英雄免费解锁 · 无需抽卡</span></h2>
+      <div id="hero-grid"></div>
+    </div>
+  </div>
+
+  <!-- 提示 toast -->
+  <div id="toast-layer"></div>
+</div>
+
+<script src="js/sprites.js"></script>
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
