@@ -1,0 +1,566 @@
+﻿<!doctype html><html lang='zh'><head><meta charset='utf-8'><style>body{margin:0;padding:12px;background:#20242c}</style></head><body><div id="px-hud-root" class="px-root" aria-label="像素风ARPG游戏主界面模型">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+
+  <div class="px-device" id="pxDevice">
+    <!-- ============ 主世界区域 ============ -->
+    <div class="px-world" id="pxWorld">
+      <canvas id="pxMap" width="960" height="600" aria-label="开放世界地图"></canvas>
+
+      <!-- 顶部中央：场景 / Boss 信息 -->
+      <div class="px-topbar">
+        <div class="px-zone">
+          <i data-lucide="map-pin" aria-hidden="true"></i>
+          <span>沙盒副本 · 落日平原</span>
+          <em class="px-ch">CH.3</em>
+        </div>
+        <div class="px-world-event" id="pxEvent">
+          <i data-lucide="waves" aria-hidden="true"></i><span>世界事件 · 深海入侵 04:32</span>
+        </div>
+        <div class="px-boss-track">
+          <span class="px-bt-label">世界Boss</span>
+          <div class="px-bt-chain" id="pxBossChain"></div>
+        </div>
+      </div>
+
+      <!-- 小地图 右上 -->
+      <div class="px-minimap">
+        <canvas id="pxMini" width="150" height="150"></canvas>
+        <div class="px-mm-coords" id="pxCoords">128 , 64</div>
+      </div>
+
+      <!-- 世界飘字层 -->
+      <div class="px-floats" id="pxFloats"></div>
+
+      <!-- ============ 左上：角色状态区 ============ -->
+      <div class="px-hero-panel">
+        <div class="px-portrait" id="pxPortrait">
+          <div class="px-portrait-art" id="pxPortraitArt">🧕</div>
+          <span class="px-lv">Lv.42</span>
+        </div>
+        <div class="px-bars">
+          <div class="px-name-row">
+            <span class="px-hero-name" id="pxHeroName">修女 · 赛琳娜</span>
+            <span class="px-buff" id="pxBuff"><i data-lucide="shield" aria-hidden="true"></i>护盾</span>
+          </div>
+          <div class="px-bar px-hp">
+            <div class="px-bar-fill" id="pxHpFill"></div>
+            <span class="px-bar-txt" id="pxHpTxt">3120 / 3120</span>
+          </div>
+          <div class="px-bar px-st">
+            <div class="px-bar-fill" id="pxStFill"></div>
+            <span class="px-bar-txt" id="pxStTxt">体能 100</span>
+          </div>
+          <div class="px-bar px-exp">
+            <div class="px-bar-fill" id="pxExpFill"></div>
+            <span class="px-bar-txt">EXP 67%</span>
+          </div>
+        </div>
+        <div class="px-resources">
+          <span class="px-res"><i data-lucide="coins" aria-hidden="true"></i> 86,420</span>
+          <span class="px-res"><i data-lucide="gem" aria-hidden="true"></i> 1,258</span>
+          <span class="px-res px-ticket"><i data-lucide="ticket" aria-hidden="true"></i> 副本券 ×3</span>
+        </div>
+      </div>
+
+      <!-- ============ 宠物栏：状态区下方 ============ -->
+      <div class="px-pet-panel" id="pxPetPanel">
+        <div class="px-pet-card px-pet-active" data-pet="0">
+          <span class="px-pet-rank px-rank-orange">橙</span>
+          <div class="px-pet-art">🐲</div>
+          <div class="px-pet-info">
+            <b>小火龙</b>
+            <div class="px-pet-bar"><i style="width:88%"></i></div>
+          </div>
+        </div>
+        <div class="px-pet-card" data-pet="1">
+          <span class="px-pet-rank px-rank-purple">紫</span>
+          <div class="px-pet-art">🦊</div>
+          <div class="px-pet-info">
+            <b>影狐</b>
+            <div class="px-pet-bar"><i style="width:0%"></i></div>
+          </div>
+        </div>
+        <div class="px-pet-card" data-pet="2">
+          <span class="px-pet-rank px-rank-blue">蓝</span>
+          <div class="px-pet-art">🐺</div>
+          <div class="px-pet-info">
+            <b>冰原狼</b>
+            <div class="px-pet-bar"><i style="width:0%"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 左侧玩法入口 -->
+      <div class="px-side-entries">
+        <button class="px-side-btn" data-entry="tower"><i data-lucide="building-2" aria-hidden="true"></i><span>爬塔<br><em>80层</em></span></button>
+        <button class="px-side-btn" data-entry="raid"><i data-lucide="swords" aria-hidden="true"></i><span>团队<br><em>副本</em></span></button>
+        <button class="px-side-btn" data-entry="trial"><i data-lucide="trophy" aria-hidden="true"></i><span>荣誉<br><em>试炼</em></span></button>
+        <button class="px-side-btn" data-entry="dungeon"><i data-lucide="door-open" aria-hidden="true"></i><span>普通<br><em>副本</em></span></button>
+      </div>
+
+      <!-- ============ 右下：技能 + 背包 ============ -->
+      <div class="px-action-area">
+        <div class="px-quick-row">
+          <button class="px-quick-btn" id="pxBagBtn" aria-label="背包"><i data-lucide="backpack" aria-hidden="true"></i><span>背包</span></button>
+          <button class="px-quick-btn" id="pxWarehouseBtn" aria-label="仓库"><i data-lucide="warehouse" aria-hidden="true"></i><span>仓库</span></button>
+          <button class="px-quick-btn" id="pxSwapBtn" aria-label="一键换装"><i data-lucide="shuffle" aria-hidden="true"></i><span>一键换装</span></button>
+        </div>
+        <div class="px-skill-cluster">
+          <button class="px-skill px-skill-sub" data-skill="2" id="pxSkill2">
+            <i data-lucide="sparkles" aria-hidden="true"></i>
+            <span class="px-cd" id="pxCd2"></span><em class="px-sk-name">神圣新星</em>
+          </button>
+          <button class="px-skill px-skill-sub" data-skill="1" id="pxSkill1">
+            <i data-lucide="heart-pulse" aria-hidden="true"></i>
+            <span class="px-cd" id="pxCd1"></span><em class="px-sk-name">治疗术</em>
+          </button>
+          <button class="px-skill px-skill-ult" data-skill="0" id="pxSkill0">
+            <i data-lucide="sun" aria-hidden="true"></i>
+            <span class="px-cd" id="pxCd0"></span><em class="px-sk-name">复活圣光</em>
+          </button>
+          <button class="px-skill px-skill-atk" id="pxAttack" aria-label="普通攻击">
+            <i data-lucide="sword" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ 底部：武器栏（3把） ============ -->
+      <div class="px-weapon-bar" id="pxWeaponBar">
+        <button class="px-weapon" data-w="0">
+          <span class="px-w-rarity px-q-gold"></span>
+          <span class="px-w-icon">🗡️</span>
+          <span class="px-w-name">雷鸣长剑</span>
+          <span class="px-w-dmg">ATK 842</span>
+          <span class="px-w-slot">1</span>
+        </button>
+        <button class="px-weapon px-w-active" data-w="1">
+          <span class="px-w-rarity px-q-gold"></span>
+          <span class="px-w-icon">🏹</span>
+          <span class="px-w-name">穿云战弓</span>
+          <span class="px-w-dmg">ATK 765</span>
+          <span class="px-w-slot">2</span>
+        </button>
+        <button class="px-weapon" data-w="2">
+          <span class="px-w-rarity px-q-purple"></span>
+          <span class="px-w-icon">🔨</span>
+          <span class="px-w-name">碎岩重锤</span>
+          <span class="px-w-dmg">ATK 910</span>
+          <span class="px-w-slot">3</span>
+        </button>
+      </div>
+
+      <!-- 英雄切换条（底部武器栏上方） -->
+      <div class="px-hero-switch" id="pxHeroSwitch">
+        <button class="px-hs active" data-hero="0"><span>🧕</span><em>修女</em></button>
+        <button class="px-hs" data-hero="1"><span>🐦</span><em>咕咕</em></button>
+        <button class="px-hs" data-hero="2"><span>👿</span><em>小恶魔</em></button>
+        <button class="px-hs" data-hero="3"><span>💀</span><em>亡灵术师</em></button>
+        <button class="px-hs" data-hero="4"><span>🧑‍🔧</span><em>工程师</em></button>
+      </div>
+    </div>
+
+    <!-- 设备外框信息条 -->
+    <div class="px-chrome-bar">
+      <span class="px-chrome-title"><i data-lucide="gamepad-2" aria-hidden="true"></i> 像素远征 · 主界面布局（俯视角 HUD）</span>
+      <span class="px-chrome-hint">点击地图移动 · 攻击/技能消耗体能 · 闲置自动恢复</span>
+    </div>
+  </div>
+
+  <!-- 背包弹层 -->
+  <div class="px-modal-mask" id="pxBagMask" hidden>
+    <div class="px-modal px-bag-modal" role="dialog" aria-label="背包">
+      <header><b>背包</b><button id="pxBagClose" aria-label="关闭">✕</button></header>
+      <div class="px-bag-grid" id="pxBagGrid"></div>
+      <footer>装备分品质：<i class="px-q-dot px-q-white"></i>普通 <i class="px-q-dot px-q-blue"></i>蓝 <i class="px-q-dot px-q-purple"></i>紫 <i class="px-q-dot px-q-gold"></i>金（解锁装备技能）</footer>
+    </div>
+  </div>
+</div>
+
+
+
+<style>
+#px-hud-root.px-root{
+  --px-ink:#2b1d12;
+  --px-parch:#f6e7c8;
+  --px-panel:#3a2c1d;
+  --px-panel-2:#4d3a26;
+  --px-edge:#1c130b;
+  --px-gold:#ffd34d;
+  --px-orange:#ff9d3c;
+  --px-purple:#b56bff;
+  --px-blue:#54b4ff;
+  --px-green:#7be069;
+  --px-red:#ff5a52;
+  --px-hp:#ff5a52;
+  --px-st:#54d6ff;
+  --px-exp:#ffd34d;
+  --px-pixel-font:"Press Start 2P", "ZCOOL KuaiLe", monospace;
+  --px-cn-font:"ZCOOL KuaiLe","Press Start 2P",sans-serif;
+  all:initial;
+  font-family:var(--px-cn-font);
+  display:block;
+  color:#f4ead4;
+}
+#px-hud-root *{box-sizing:border-box; image-rendering:pixelated;}
+#px-hud-root button{font-family:var(--px-cn-font); cursor:pointer; color:inherit;}
+.px-device{
+  border:6px solid #14100a;
+  border-radius:18px;
+  background:#0e0b07;
+  padding:10px;
+  box-shadow:0 18px 50px rgba(0,0,0,.55), inset 0 0 0 2px #4a3823;
+}
+.px-world{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/10;
+  border-radius:10px;
+  overflow:hidden;
+  background:#243a1e;
+  border:3px solid #000;
+  user-select:none;
+  touch-action:none;
+}
+#pxMap{position:absolute; inset:0; width:100%; height:100%; display:block;}
+.px-chrome-bar{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px 2px; font-size:13px; color:#cbb78f;
+}
+.px-chrome-title{display:flex; align-items:center; gap:8px; color:#ffe3a1;}
+.px-chrome-hint{font-size:12px; color:#9b8a68;}
+
+/* ---------- 顶部条 ---------- */
+.px-topbar{
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:10px; z-index:20; pointer-events:none;
+}
+.px-zone{
+  display:flex; align-items:center; gap:6px;
+  background:linear-gradient(#4d3a26,#33241600), #3a2c1d;
+  border:3px solid var(--px-edge); box-shadow:0 0 0 2px #6b5230, 0 4px 0 #000;
+  padding:7px 14px; border-radius:4px; font-size:15px; color:#ffe9bd;
+}
+.px-zone i{width:16px; height:16px; color:var(--px-gold);}
+.px-ch{font-style:normal; background:var(--px-gold); color:#4a2f08; border:2px solid #000; font-size:11px; padding:1px 6px; border-radius:3px;}
+.px-world-event{
+  display:flex; align-items:center; gap:6px;
+  background:#16324a; border:3px solid #061622; box-shadow:0 0 0 2px #2f7fb8, 0 4px 0 #000;
+  padding:7px 14px; border-radius:4px; font-size:14px; color:#a9e5ff;
+  animation:pxPulse 1.6s steps(2) infinite;
+}
+.px-world-event i{width:15px;height:15px;}
+@keyframes pxPulse{50%{box-shadow:0 0 0 2px #54b4ff, 0 0 18px #54b4ff, 0 4px 0 #000;}}
+.px-boss-track{
+  display:flex; align-items:center; gap:8px;
+  background:rgba(20,14,8,.82); border:2px solid #000; padding:6px 10px; border-radius:4px;
+}
+.px-bt-label{font-size:12px; color:#ffcaa0;}
+.px-bt-chain{display:flex; gap:5px;}
+.px-bt-node{
+  width:26px; height:26px; display:grid; place-items:center; font-size:14px;
+  background:#2c2014; border:2px solid #000; border-radius:3px; opacity:.45;
+}
+.px-bt-node.done{opacity:1; background:#3f5a25;}
+.px-bt-node.now{opacity:1; background:#7a3a1d; box-shadow:0 0 10px #ff9d3c; animation:pxPulse 1.2s steps(2) infinite;}
+
+/* ---------- 小地图 ---------- */
+.px-minimap{
+  position:absolute; top:58px; right:12px; z-index:20;
+  width:128px; border:3px solid #000; box-shadow:0 0 0 2px #8a6c3f, 0 4px 0 #000;
+  border-radius:6px; overflow:hidden; background:#1d2a18;
+}
+#pxMini{display:block; width:100%; height:auto;}
+.px-mm-coords{
+  text-align:center; font-size:11px; line-height:18px;
+  background:rgba(0,0,0,.7); color:#cfe8a8; font-family:var(--px-pixel-font);
+}
+
+/* ---------- 角色状态区 ---------- */
+.px-hero-panel{
+  position:absolute; top:12px; left:12px; z-index:20;
+  display:flex; gap:9px; align-items:flex-start;
+}
+.px-portrait{
+  position:relative; width:74px; height:74px; flex:none;
+  border:3px solid var(--px-gold); box-shadow:0 0 0 2px #000, 0 4px 0 #000;
+  border-radius:6px; background:#243a1e; overflow:hidden;
+}
+.px-portrait-art{
+  width:100%; height:100%; display:grid; place-items:center; font-size:42px;
+  background:radial-gradient(circle at 50% 35%, #6d8a4a, #2c3d20);
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.4));
+}
+.px-lv{
+  position:absolute; left:-2px; bottom:-2px;
+  background:var(--px-gold); color:#4a2f08; border:2px solid #000;
+  font-size:11px; padding:1px 6px; border-radius:3px;
+}
+.px-bars{width:210px;}
+.px-name-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+.px-hero-name{font-size:16px; color:#fff3d6; text-shadow:2px 2px 0 #000;}
+.px-buff{
+  display:inline-flex; align-items:center; gap:3px; font-size:11px;
+  background:rgba(84,180,255,.25); border:1px solid var(--px-blue);
+  color:#bfe8ff; padding:1px 6px; border-radius:8px; font-style:normal;
+}
+.px-buff i{width:11px;height:11px;}
+.px-buff.off{display:none;}
+.px-bar{
+  position:relative; height:17px; margin-bottom:4px;
+  border:2px solid #000; border-radius:3px; background:#1a120a; overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.px-bar-fill{height:100%; transition:width .18s steps(3);}
+.px-hp .px-bar-fill{width:100%; background:repeating-linear-gradient(90deg,#ff6d64 0 8px,#e23b34 8px 10px);}
+.px-st .px-bar-fill{width:100%; background:repeating-linear-gradient(90deg,#69e0ff 0 8px,#2fa9d8 8px 10px);}
+.px-exp .px-bar-fill{width:67%; background:repeating-linear-gradient(90deg,#ffe07a 0 8px,#e6b52e 8px 10px);}
+.px-exp{height:9px;}
+.px-bar-txt{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-size:10px; color:#fff; text-shadow:1px 1px 0 #000; letter-spacing:.5px;
+  font-family:var(--px-pixel-font);
+}
+.px-exp .px-bar-txt{font-size:8px;}
+.px-resources{display:flex; gap:6px; margin-top:5px; flex-wrap:wrap;}
+.px-res{
+  display:inline-flex; align-items:center; gap:4px; font-size:12px;
+  background:rgba(20,14,8,.78); border:2px solid #000; border-radius:4px; padding:2px 8px;
+  color:#ffe3a1; font-style:normal;
+}
+.px-res i{width:12px;height:12px;}
+.px-res .lucide-gem{color:var(--px-blue);}
+.px-res .lucide-ticket{color:var(--px-orange);}
+
+/* ---------- 宠物栏 ---------- */
+.px-pet-panel{
+  position:absolute; top:108px; left:12px; z-index:19;
+  display:flex; flex-direction:column; gap:7px;
+}
+.px-pet-card{
+  display:flex; align-items:center; gap:8px; width:188px;
+  background:rgba(28,19,11,.85); border:2px solid #000; border-radius:5px;
+  padding:5px 8px; opacity:.62; transition:transform .12s steps(2), opacity .12s;
+}
+.px-pet-card.px-pet-active{
+  opacity:1; border-color:#6b5230; box-shadow:0 0 0 2px var(--px-orange), 0 3px 0 #000;
+  background:linear-gradient(90deg,rgba(255,157,60,.22),rgba(28,19,11,.9));
+}
+.px-pet-card:not(.px-pet-active):hover{opacity:.9; transform:translateX(3px);}
+.px-pet-rank{
+  font-size:10px; font-style:normal; width:20px; text-align:center;
+  border:1px solid #000; border-radius:3px; padding:1px 0;
+}
+.px-rank-orange{background:var(--px-orange); color:#3a1a02;}
+.px-rank-purple{background:var(--px-purple); color:#fff;}
+.px-rank-blue{background:var(--px-blue); color:#04223a;}
+.px-pet-art{
+  width:38px; height:38px; flex:none; display:grid; place-items:center; font-size:24px;
+  background:#33452a; border:2px solid #000; border-radius:4px;
+}
+.px-pet-info{flex:1; min-width:0;}
+.px-pet-info b{font-size:14px; display:block; color:#ffe9bd; margin-bottom:3px;}
+.px-pet-bar{height:8px; background:#140d06; border:1px solid #000; border-radius:2px; overflow:hidden;}
+.px-pet-bar i{display:block; height:100%; background:linear-gradient(90deg,#7be069,#46a837);}
+
+/* ---------- 左侧玩法入口 ---------- */
+.px-side-entries{
+  position:absolute; left:12px; top:268px; z-index:18;
+  display:flex; flex-direction:column; gap:9px;
+}
+.px-side-btn{
+  position:relative; display:flex; align-items:center; gap:7px;
+  width:92px; padding:6px 8px;
+  background:linear-gradient(#5a4329,#3a2a18);
+  border:2px solid #000; box-shadow:0 0 0 2px #7a5f38, 0 3px 0 #000;
+  border-radius:5px; font-size:13px; color:#ffe9bd; text-align:left;
+  transition:transform .1s steps(2);
+}
+.px-side-btn:hover{transform:translateX(4px); color:#fff;}
+.px-side-btn:active{transform:translateY(2px);}
+.px-side-btn i{width:18px; height:18px; color:var(--px-gold); flex:none;}
+.px-side-btn span{line-height:1.15;}
+.px-side-btn em{font-style:normal; font-size:11px; color:#ffd98a;}
+
+/* ---------- 右下：技能 / 背包 ---------- */
+.px-action-area{
+  position:absolute; right:14px; bottom:96px; z-index:22;
+  display:flex; align-items:flex-end; gap:14px;
+}
+.px-quick-row{display:flex; flex-direction:column; gap:8px; margin-bottom:6px;}
+.px-quick-btn{
+  display:flex; align-items:center; gap:6px; justify-content:center;
+  min-width:86px; padding:7px 10px; font-size:13px;
+  background:linear-gradient(#4a3a26,#2c2014); color:#ffe9bd;
+  border:2px solid #000; box-shadow:0 0 0 2px #6b5230, 0 3px 0 #000;
+  border-radius:6px;
+}
+.px-quick-btn:hover{color:#fff;}
+.px-quick-btn i{width:15px;height:15px; color:var(--px-gold);}
+#pxSwapBtn{background:linear-gradient(#7a4f1d,#4a2c0d); box-shadow:0 0 0 2px var(--px-orange), 0 3px 0 #000;}
+#pxSwapBtn i{color:#ffd98a;}
+.px-skill-cluster{position:relative; width:196px; height:196px;}
+.px-skill{
+  position:absolute; border:3px solid #000; border-radius:50%;
+  display:grid; place-items:center; overflow:hidden;
+  background:radial-gradient(circle at 38% 30%, #6a5234, #2e2012);
+  box-shadow:0 4px 0 #000; transition:transform .08s steps(2);
+}
+.px-skill i{width:60%;height:60%;}
+.px-skill:active{transform:translateY(3px); box-shadow:0 1px 0 #000;}
+.px-skill-atk{
+  right:0; bottom:0; width:86px; height:86px;
+  background:radial-gradient(circle at 38% 30%, #d8b25c, #8a5a17);
+  border-color:#3a2408; box-shadow:0 0 0 2px var(--px-gold), 0 4px 0 #000; z-index:3;
+}
+.px-skill-atk i{color:#fff3d6; width:56%;height:56%;}
+.px-skill-ult{
+  right:78px; bottom:40px; width:74px; height:74px;
+  background:radial-gradient(circle at 38% 30%, #ffe58a, #b07f12);
+  border-color:#3a2a05; box-shadow:0 0 0 2px #fff0b0, 0 4px 0 #000; z-index:2;
+}
+.px-skill-ult i{color:#6b4a06;}
+.px-skill-sub{
+  width:58px; height:58px;
+}
+.px-skill-sub i{color:#9fdcff;}
+#pxSkill1{right:26px; bottom:96px;}
+#pxSkill2{right:128px; bottom:120px;}
+.px-sk-name{
+  position:absolute; bottom:-19px; left:50%; transform:translateX(-50%);
+  font-size:11px; font-style:normal; white-space:nowrap;
+  color:#ffe9bd; text-shadow:1px 1px 0 #000; pointer-events:none;
+}
+.px-cd{
+  position:absolute; inset:0; display:grid; place-items:center;
+  background:rgba(8,6,4,.78); font-family:var(--px-pixel-font); font-size:14px;
+  color:#fff; border-radius:50%; opacity:0; transition:opacity .12s;
+}
+.px-skill.cooling .px-cd{opacity:1;}
+.px-skill.low-st{filter:grayscale(.7) brightness(.65);}
+
+/* ---------- 底部武器栏 ---------- */
+.px-weapon-bar{
+  position:absolute; left:50%; bottom:12px; transform:translateX(-50%);
+  z-index:21; display:flex; gap:12px;
+}
+.px-weapon{
+  position:relative; width:158px; display:grid;
+  grid-template-columns:40px 1fr; grid-template-rows:1fr auto; gap:2px 8px;
+  align-items:center; text-align:left;
+  padding:8px 10px 7px 44px;
+  background:linear-gradient(#46351f,#2a1d10);
+  border:3px solid #000; border-radius:7px;
+  box-shadow:0 4px 0 #000; transition:transform .1s steps(2);
+}
+.px-weapon:hover{transform:translateY(-3px);}
+.px-weapon.px-w-active{
+  background:linear-gradient(#6b5024,#3d2c12);
+  box-shadow:0 0 0 2px var(--px-gold), 0 4px 0 #000;
+}
+.px-w-rarity{
+  position:absolute; left:8px; top:8px; bottom:8px; width:8px;
+  border:1px solid #000; border-radius:2px;
+}
+.px-q-gold{background:linear-gradient(#ffe98a,#d99b16);}
+.px-q-purple{background:linear-gradient(#d09aff,#8338d8);}
+.px-q-blue{background:linear-gradient(#9ad4ff,#2f7fd8);}
+.px-q-white{background:linear-gradient(#fff,#9c9c9c);}
+.px-w-icon{
+  position:absolute; left:18px; top:50%; transform:translateY(-50%);
+  font-size:26px; filter:drop-shadow(1px 1px 0 #000);
+}
+.px-w-name{font-size:14px; color:#ffe9bd; line-height:1.1;}
+.px-w-active .px-w-name{color:#fff3d6;}
+.px-w-dmg{font-size:11px; color:#ffb27a; font-family:var(--px-pixel-font); grid-column:2;}
+.px-w-slot{
+  position:absolute; right:6px; top:6px;
+  font-size:10px; font-style:normal; background:#000; color:#ffd98a;
+  border:1px solid #6b5230; border-radius:3px; padding:0 5px;
+}
+.px-w-active .px-w-slot{background:var(--px-gold); color:#4a2f08; border-color:#fff0b0;}
+
+/* ---------- 英雄切换 ---------- */
+.px-hero-switch{
+  position:absolute; left:140px; bottom:104px; z-index:18;
+  display:flex; gap:8px;
+}
+.px-hs{
+  width:52px; padding:4px 0 3px; text-align:center;
+  background:rgba(28,19,11,.85); border:2px solid #000; border-radius:6px;
+  box-shadow:0 3px 0 #000;
+}
+.px-hs span{font-size:22px; display:block; line-height:1;}
+.px-hs em{font-style:normal; font-size:11px; color:#cdb78f;}
+.px-hs.active{background:linear-gradient(#6b5024,#3d2c12); box-shadow:0 0 0 2px var(--px-gold), 0 3px 0 #000;}
+.px-hs.active em{color:#ffe9bd;}
+
+/* ---------- 飘字 ---------- */
+.px-floats{position:absolute; inset:0; z-index:30; pointer-events:none; overflow:hidden;}
+.px-dmg{
+  position:absolute; font-family:var(--px-pixel-font); font-size:15px;
+  text-shadow:2px 2px 0 #000; animation:pxFloat .9s steps(8) forwards;
+}
+.px-dmg.crit{font-size:20px; color:var(--px-gold);}
+.px-dmg.hit{color:#ffd1cf;}
+.px-dmg.heal{color:#8fffb0;}
+@keyframes pxFloat{
+  0%{opacity:1; transform:translateY(0) scale(1);}
+  100%{opacity:0; transform:translateY(-46px) scale(1.15);}
+}
+
+/* ---------- 背包弹层 ---------- */
+.px-modal-mask{
+  position:absolute; inset:0; z-index:60;
+  background:rgba(6,4,2,.66); display:grid; place-items:center;
+}
+.px-modal{
+  width:min(560px, 86%);
+  background:linear-gradient(#4d3a26,#332416);
+  border:4px solid #000; box-shadow:0 0 0 3px #8a6c3f, 0 10px 0 #000;
+  border-radius:10px; padding:14px;
+}
+.px-modal header{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.px-modal header b{font-size:18px; color:#ffe9bd;}
+.px-modal header button{
+  width:30px; height:30px; background:#7a2a1d; border:2px solid #000;
+  border-radius:4px; color:#ffe3d0; font-size:14px;
+}
+.px-bag-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px;}
+.px-cell{
+  aspect-ratio:1; display:grid; place-items:center; font-size:26px;
+  background:#241a0e; border:2px solid #000; border-radius:5px;
+  position:relative; box-shadow:inset 0 0 0 2px rgba(255,255,255,.05);
+}
+.px-cell .px-q-edge{position:absolute; inset:0; border-radius:4px; box-shadow:inset 0 0 0 3px; pointer-events:none;}
+.px-cell .px-c-tag{
+  position:absolute; right:2px; bottom:1px; font-size:9px; color:#cdb78f;
+  font-family:var(--px-pixel-font);
+}
+.px-cell.px-q-gold-cell .px-q-edge{color:rgba(255,211,77,.85);}
+.px-cell.px-q-purple-cell .px-q-edge{color:rgba(181,107,255,.85);}
+.px-cell.px-q-blue-cell .px-q-edge{color:rgba(84,180,255,.8);}
+.px-cell.px-q-white-cell .px-q-edge{color:rgba(255,255,255,.5);}
+.px-modal footer{margin-top:12px; font-size:13px; color:#cdb78f;}
+.px-q-dot{display:inline-block; width:10px; height:10px; border:1px solid #000; margin:0 3px 0 10px; vertical-align:-1px;}
+
+/* ---------- 响应式：手游竖屏 ---------- */
+@media (max-aspect-ratio: 1/1), (max-width: 720px){
+  .px-world{aspect-ratio:9/16;}
+  .px-bars{width:150px;}
+  .px-pet-panel{top:100px;}
+  .px-pet-card{width:150px;}
+  .px-side-entries{top:auto; bottom:300px;}
+  .px-side-btn{width:78px; font-size:12px;}
+  .px-weapon{width:104px; padding-left:36px;}
+  .px-w-icon{left:12px; font-size:20px;}
+  .px-w-dmg{display:none;}
+  .px-hero-switch{left:96px; bottom:88px;}
+  .px-hs{width:42px;}
+  .px-action-area{bottom:84px;}
+  .px-quick-btn{min-width:64px; font-size:12px;}
+}
+</style>
+
+
+</body></html>
